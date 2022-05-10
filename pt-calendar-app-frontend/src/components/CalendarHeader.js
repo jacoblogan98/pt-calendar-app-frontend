@@ -24,8 +24,8 @@ export default function CalendarHeader() {
 
   return (
     <header className='px-4 py-2 flex items-center bg-stone-700'>
-        <img src={logo} alt="logo" className='mr-2 w-12 h-12'/>
-        <h1 className='mr-10 text-xl text-orange-400 font-bold'>
+        <img src={logo} alt="logo" className='mr-2 w-20 h-20'/>
+        <h1 className='mr-10 text-3xl text-orange-400 font-bold'>
           PT Calendar
         </h1>
         <button className="border rounded py-2 px-4 mr-5 text-white" onClick={handleReset}>
@@ -41,7 +41,7 @@ export default function CalendarHeader() {
             chevron_right
           </span>
         </button>
-        <h2 className='ml-4 text-xl text-white font-bold'>
+        <h2 className='ml-8 text-2xl text-white font-bold'>
           {dayjs(new Date(dayjs().year(), monthIndex)).format("MMMM YYYY")}
         </h2>
     </header>
