@@ -127,8 +127,8 @@ export default function EventModal() {
                             <input 
                             type="checkbox" 
                             name="check-in" 
-                            value={checkedIn}
-                            onChange={(e) => setCheckedIn(e.checked)}
+                            checked={checkedIn}
+                            onChange={(e) => setCheckedIn(e.target.checked)}
                             className="pt-3 border-0 text-stone-500 text-l font-semibold pb-2 border-b-2 border-stone-400 focus:outline-none focus:ring-0 focus:border-orange-500"
                             />
                         </div>

@@ -9,7 +9,7 @@ function savedEventsReducer(state, {type, payload}) {
         case 'update':
             return state.map(evt => evt.id === payload.id ? payload : evt)
         case 'delete':
-            return state.map(evt => evt.id !== payload.id)
+            return state.filter(evt => evt.id !== payload.id)
         default:
             throw new Error();
     }
