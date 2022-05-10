@@ -4,21 +4,25 @@ import GlobalContext from '../context/GlobalContext'
 const labelsClasses = ['red', 'yellow', 'green', 'blue', 'indigo', 'purple'];
 
 export default function EventModal() {
-    const [patient, setPatient] = useState('');
-    const [apptTimeStart, setApptTimeStart] = useState('');
-    const [apptTimeEnd, setApptTimeEnd] = useState('');
-    const [checkedIn, setCheckedIn] = useState(false)
-    const [pt, setPt] = useState('')
-    const [exercises, setExercises] = useState('')
-    const [notes, setNotes] = useState('')
-    const [selectedLabel, setSelectedLabel] = useState(labelsClasses[0])
+    const { setShowEventModal, daySelected, dispatchCalEvent, selectedEvent } = useContext(GlobalContext)
 
-    const { setShowEventModal, daySelected, dispatchCalEvent } = useContext(GlobalContext)
+    const [patient, setPatient] = useState(selectedEvent ? selectedEvent.patient : "");
+    const [apptTimeStart, setApptTimeStart] = useState(selectedEvent ? selectedEvent.apptTimeStart : '');
+    const [apptTimeEnd, setApptTimeEnd] = useState(selectedEvent ? selectedEvent.apptTimeEnd : '');
+    const [checkedIn, setCheckedIn] = useState(selectedEvent ? selectedEvent.checkedIn : false)
+    const [pt, setPt] = useState(selectedEvent ? selectedEvent.pt : '')
+    const [exercises, setExercises] = useState(selectedEvent ? selectedEvent.exercises : '')
+    const [notes, setNotes] = useState(selectedEvent ? selectedEvent.notes : '')
+    const [selectedLabel, setSelectedLabel] = useState(selectedEvent 
+        ? labelsClasses.find((lbl) => lbl === selectedEvent.label) 
+        : labelsClasses[0]
+        );
 
     function handleSubmit(e) {
         e.preventDefault()
 
         const calendarEvent = {
+            id: selectedEvent ? selectedEvent.id : Date.now(),
             patient,
             day: daySelected.valueOf(),
             apptTimeStart,
@@ -29,8 +33,12 @@ export default function EventModal() {
             notes,
             label: selectedLabel
         }
-
-        dispatchCalEvent({type: 'push', payload: calendarEvent});
+        if(selectedEvent) {
+            dispatchCalEvent({ type: 'update', payload: calendarEvent });
+        } else {
+            dispatchCalEvent({type: 'push', payload: calendarEvent});
+        }
+        
         setShowEventModal(false)
     }
 
@@ -41,13 +49,25 @@ export default function EventModal() {
                     <span className='material-icons text-white'>
                         drag_handle
                     </span>
-                    <button 
-                    onClick={() => setShowEventModal(false)}
-                    >
-                        <span className='material-icons text-white pt-2'>
-                            close
-                        </span>
-                    </button>
+                    <div>
+                        {selectedEvent && (
+                            <span 
+                            className='material-icons text-white pt-2 cursor-pointer'
+                            onClick={() => 
+                                {dispatchCalEvent({type: 'delete', payload: selectedEvent})
+                                setShowEventModal(false)
+                            }}>
+                                delete
+                            </span>
+                        )}
+                        <button 
+                        onClick={() => setShowEventModal(false)}
+                        >
+                            <span className='material-icons text-white pt-2'>
+                                close
+                            </span>
+                        </button>
+                    </div>
                 </header>
                 
                 <div className='p-3'>
@@ -108,7 +128,7 @@ export default function EventModal() {
                             type="checkbox" 
                             name="check-in" 
                             value={checkedIn}
-                            onChange={(e) => setCheckedIn(e.target.value)}
+                            onChange={(e) => setCheckedIn(e.checked)}
                             className="pt-3 border-0 text-stone-500 text-l font-semibold pb-2 border-b-2 border-stone-400 focus:outline-none focus:ring-0 focus:border-orange-500"
                             />
                         </div>
