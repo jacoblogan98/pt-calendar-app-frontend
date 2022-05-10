@@ -4,7 +4,7 @@ import logo from '../assets/logo.png'
 import GlobalContext from '../context/GlobalContext'
 
 export default function CalendarHeader() {
-  const { monthIndex, setMonthIndex } = useContext(GlobalContext)
+  const { monthIndex, setMonthIndex, setDaySelected } = useContext(GlobalContext)
 
   function handlePrevMonth() {
     setMonthIndex(monthIndex - 1)
@@ -18,6 +18,8 @@ export default function CalendarHeader() {
     setMonthIndex(monthIndex === dayjs().month() 
     ? monthIndex + Math.random() 
     : dayjs().month())
+
+    setDaySelected(dayjs())
   }
 
   return (
