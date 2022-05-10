@@ -1,6 +1,8 @@
 import React, { useContext, useState } from 'react'
 import GlobalContext from '../context/GlobalContext'
 
+const labelsClasses = ['red', 'yellow', 'green', 'blue', 'indigo', 'purple'];
+
 export default function EventModal() {
     const [patient, setPatient] = useState('');
     const [apptTimeStart, setApptTimeStart] = useState('');
@@ -9,8 +11,28 @@ export default function EventModal() {
     const [pt, setPt] = useState('')
     const [exercises, setExercises] = useState('')
     const [notes, setNotes] = useState('')
+    const [selectedLabel, setSelectedLabel] = useState(labelsClasses[0])
 
-    const { setShowEventModal, daySelected } = useContext(GlobalContext)
+    const { setShowEventModal, daySelected, dispatchCalEvent } = useContext(GlobalContext)
+
+    function handleSubmit(e) {
+        e.preventDefault()
+
+        const calendarEvent = {
+            patient,
+            day: daySelected.valueOf(),
+            apptTimeStart,
+            apptTimeEnd,
+            checkedIn,
+            pt,
+            exercises,
+            notes,
+            label: selectedLabel
+        }
+
+        dispatchCalEvent({type: 'push', payload: calendarEvent});
+        setShowEventModal(false)
+    }
 
     return (
         <div className='h-screen w-full fixed left-0 top-0 flex justify-center items-center'>
@@ -27,6 +49,7 @@ export default function EventModal() {
                         </span>
                     </button>
                 </header>
+                
                 <div className='p-3'>
                     <div className="grid items-end gap-y-7">
                         
@@ -135,8 +158,36 @@ export default function EventModal() {
                             />
                         </div>
                         
+                        <div className="flex gap-x-2">
+                            <span className='material-icons-outlined text-white'>
+                                palette
+                            </span>
+                            {labelsClasses.map((lblClass, i) => (
+                                <span 
+                                key={i}
+                                className={`bg-${lblClass}-500 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer`}
+                                onClick={() => setSelectedLabel(lblClass)}
+                                >
+                                    {selectedLabel === lblClass && 
+                                    <span className='material-icons-outlined text-white text-sm'>
+                                        check
+                                    </span>}
+                                    
+                                </span>
+                            ))}
+                        </div>
                     </div>
                 </div>
+
+                <footer className='flex justify-end border-t p-3 mt-5'>
+                    <button 
+                    type='submit' 
+                    onClick={handleSubmit}
+                    className='bg-orange-600 hover:bg-orange-700 px-6 py-2 rounded text-white'
+                    >
+                        Schedule
+                    </button>
+                </footer>
             </form>
         </div>
     )
