@@ -1,36 +1,64 @@
-import React, { useEffect, useMemo, useReducer, useState }from 'react'
+import React, { useEffect, useMemo, useReducer, useState } from 'react'
 import GlobalContext from './GlobalContext'
 import dayjs from 'dayjs'
 
 function savedEventsReducer(state, {type, payload}) {
     switch (type) {
-        case 'push':
-            return [...state, payload];
-        case 'update':
+        case 'get':
+            return payload
+        case 'post':
+            fetch('http://localhost:3000/appointments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(resp => resp.json())
+            .then(appt => console.log(appt))
+
+            return [...state, payload]
+        case 'patch':
+            fetch(`http://localhost:3000/appointments/${payload.id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(resp => resp.json())
+            .then(appt => console.log(appt))
+
             return state.map(evt => evt.id === payload.id ? payload : evt)
         case 'delete':
+            fetch(`http://localhost:3000/appointments/${payload.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+
             return state.filter(evt => evt.id !== payload.id)
         default:
             throw new Error();
     }
 }
 
-function initEvents() {
-    const storageEvents = localStorage.getItem('savedEvents')
-    const parsedEvents = storageEvents ? JSON.parse(storageEvents) : []
-
-    return parsedEvents
-}
-
 export default function ContextWrapper(props) {
     const [monthIndex, setMonthIndex] = useState(dayjs().month())
     const [smallCalendarMonth, setSmallCalendarMonth] = useState(null)
-    const[daySelected, setDaySelected] = useState(dayjs());
+    const [daySelected, setDaySelected] = useState(dayjs());
     const [showEventModal, setShowEventModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [labels, setLabels] = useState([])
     
-    const [savedEvents, dispatchCalEvent] = useReducer(savedEventsReducer, [], initEvents)
+    const [savedEvents, dispatchCalEvent] = useReducer(savedEventsReducer, [])
+
+    useEffect(() => {
+        fetch('http://localhost:3000/appointments')
+        .then(resp => resp.json())
+        .then(events => dispatchCalEvent({type: 'get', payload: events}))
+    }, [])
 
     useEffect(() => {
         setLabels((prevLabels) => {
@@ -52,10 +80,6 @@ export default function ContextWrapper(props) {
                 .includes(evt.label)
         );
     }, [savedEvents, labels])
-
-    useEffect(() => {
-        localStorage.setItem('savedEvents', JSON.stringify(savedEvents))
-    }, [savedEvents])
 
     useEffect(() => {
         if (smallCalendarMonth !== null) {

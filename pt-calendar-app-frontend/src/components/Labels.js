@@ -3,7 +3,6 @@ import GlobalContext from '../context/GlobalContext'
 
 export default function Labels() {
     const { labels, updateLabel } = useContext(GlobalContext)
-    console.log(labels)
 
     return (
         <>

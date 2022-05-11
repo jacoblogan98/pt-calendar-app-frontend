@@ -22,7 +22,6 @@ export default function EventModal() {
         e.preventDefault()
 
         const calendarEvent = {
-            id: selectedEvent ? selectedEvent.id : Date.now(),
             patient,
             day: daySelected.valueOf(),
             apptTimeStart,
@@ -33,10 +32,11 @@ export default function EventModal() {
             notes,
             label: selectedLabel
         }
-        if(selectedEvent) {
-            dispatchCalEvent({ type: 'update', payload: calendarEvent });
+
+        if (selectedEvent) {
+            dispatchCalEvent({ type: 'patch', payload: {...calendarEvent, id: selectedEvent.id }});
         } else {
-            dispatchCalEvent({type: 'push', payload: calendarEvent});
+            dispatchCalEvent({ type: 'post', payload: calendarEvent });
         }
         
         setShowEventModal(false)
