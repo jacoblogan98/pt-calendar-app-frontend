@@ -5,9 +5,10 @@ import dayjs from 'dayjs'
 function savedEventsReducer(state, {type, payload}) {
     switch (type) {
         case 'get':
+            console.log(payload)
             return payload
         case 'post':
-            fetch('http://localhost:3000/appointments', {
+            fetch('http://localhost:9292', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -19,7 +20,7 @@ function savedEventsReducer(state, {type, payload}) {
 
             return [...state, payload]
         case 'patch':
-            fetch(`http://localhost:3000/appointments/${payload.id}`, {
+            fetch(`http://localhost:9292/${payload.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
@@ -31,7 +32,7 @@ function savedEventsReducer(state, {type, payload}) {
 
             return state.map(evt => evt.id === payload.id ? payload : evt)
         case 'delete':
-            fetch(`http://localhost:3000/appointments/${payload.id}`, {
+            fetch(`http://localhost:9292/${payload.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -55,7 +56,7 @@ export default function ContextWrapper(props) {
     const [savedEvents, dispatchCalEvent] = useReducer(savedEventsReducer, [])
 
     useEffect(() => {
-        fetch('http://localhost:3000/appointments')
+        fetch('http://localhost:9292')
         .then(resp => resp.json())
         .then(events => dispatchCalEvent({type: 'get', payload: events}))
     }, [])
